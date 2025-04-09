@@ -5,41 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Scientific Calculator</title>
   <style>
+    /* Ensure the body fills the viewport and center the content */
     body {
-      background: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
+      background: #fff;
       color: #000;
-      position: relative;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden; /* Prevent scrolling if content is small */
     }
+    /* Calculator container styled for mobile */
     .calculator {
-      /* Using auto-fit to make the grid responsive */
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-      gap: 8px;
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
+      gap: 6px;
+      width: 95%;
+      max-width: 360px; /* Adjust for common mobile widths */
       background: #fff;
       border: 1px solid #ccc;
       border-radius: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      padding: 10px;
     }
+    /* Display styling */
     #display {
       grid-column: 1 / -1;
-      padding: 12px 20px;
-      font-size: 24px;
+      padding: 10px;
+      font-size: 22px;
       text-align: right;
-      background: #fff;
-      color: #000;
       border: 1px solid #ccc;
       border-radius: 5px;
-      margin-bottom: 10px;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 6px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
+    /* Button styling */
     button {
-      padding: 12px;
+      padding: 10px;
       font-size: 16px;
       background: #f9f9f9;
       color: #000;
@@ -48,30 +53,23 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-    button:hover { 
+    button:hover {
       background: #e6e6e6;
     }
-    /* Style adjustments for operator & function buttons */
+    /* Operator, function, and special buttons */
     .operator, .function, .equals, .clear, .white-btn, .black-btn {
       background: #fff;
       color: #000;
       border: 1px solid #ccc;
     }
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      .calculator {
-        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-        max-width: 95%;
-      }
-    }
-    /* Styles for the history panel */
+    /* History panel styles (unchanged) */
     #historyContainer {
       display: none;
       position: fixed;
       top: 20%;
       left: 50%;
       transform: translateX(-50%);
-      max-width: 80%;
+      max-width: 90%;
       max-height: 50%;
       background: #fff;
       color: #000;
@@ -195,7 +193,7 @@
       document.getElementById('angleModeBtn').textContent = angleMode;
     }
 
-    // Insert value at current cursor position
+    // Insert value at the current cursor position
     function appendToDisplay(value, cursorOffset = value.length) {
       const d = document.getElementById('display'),
             s = d.selectionStart,
@@ -206,17 +204,16 @@
       d.setSelectionRange(s + cursorOffset, s + cursorOffset);
     }
 
-    // Clear display field
+    // Clear the display field
     function clearDisplay() {
       document.getElementById('display').value = '';
     }
 
-    // Remove one character (Backspace)
+    // Remove one character (backspace)
     function backspace() {
       const d = document.getElementById('display');
       d.removeAttribute('readonly');
-      const s = d.selectionStart,
-            e = d.selectionEnd;
+      const s = d.selectionStart, e = d.selectionEnd;
       if (s === e && s > 0) {
         d.value = d.value.slice(0, s - 1) + d.value.slice(s);
         d.setSelectionRange(s - 1, s - 1);
@@ -227,7 +224,7 @@
       setTimeout(() => d.setAttribute('readonly', true), 0);
     }
 
-    // Main calculation routine
+    // Main calculation function
     function calculate() {
       try {
         let input = document.getElementById('display').value,
@@ -248,7 +245,6 @@
               .replace(/\^/g, '**')
               .replace(/%/g, '/100');
 
-        // Adjust for DEG or GRAD
         if (angleMode === 'DEG') {
           expr = expr
             .replace(/Math\.sin([^)]+)/g, 'Math.sin(($1*Math.PI/180))')
@@ -266,8 +262,6 @@
             .replace(/Math\.acos([^)]+)/g, '(Math.acos($1)*200/Math.PI)')
             .replace(/Math\.atan([^)]+)/g, '(Math.atan($1)*200/Math.PI)');
         }
-
-        // Process factorial (e.g., "5!")
         expr = expr.replace(/(\d+)!/g, (_, n) => {
           let num = parseInt(n), r = 1;
           for (let i = 2; i <= num; i++) r *= i;
@@ -289,19 +283,19 @@
       if (!isNaN(v)) d.value = (-v).toString();
     }
 
-    // Insert exponential symbol
+    // Insert exponential notation symbol
     function insertEXP() {
       appendToDisplay('E');
     }
 
-    // Reciprocal calculation (1/x)
+    // Reciprocal (1/x)
     function reciprocal() {
       const d = document.getElementById('display'),
             v = parseFloat(d.value);
       d.value = (!isNaN(v) && v !== 0) ? (1 / v).toString() : 'Error';
     }
 
-    // Combination calculation (nCr)
+    // Combination (nCr)
     function comb(n, r) {
       n = parseInt(n); r = parseInt(r);
       if (r > n) return 0;
@@ -310,7 +304,7 @@
       return res;
     }
 
-    // Permutation calculation (nPr)
+    // Permutation (nPr)
     function perm(n, r) {
       n = parseInt(n); r = parseInt(r);
       if (r > n) return 0;
@@ -379,7 +373,7 @@
       d.value = `${r},${theta}`;
     }
 
-    // Convert to Rectangular coordinates (from polar r,θ)
+    // Convert to Rectangular coordinates (from r,θ)
     function convertToRectangular() {
       const d = document.getElementById('display'),
             [r, theta] = d.value.split(',').map(parseFloat);
@@ -416,7 +410,7 @@
       d.value = `${parseFloat(m)}×10^${parseInt(e)}`;
     }
 
-    // Toggle history panel visibility
+    // Toggle history panel
     function toggleHistory() {
       const hist = document.getElementById('historyContainer');
       if (hist.style.display === 'none' || hist.style.display === '') {
@@ -428,21 +422,19 @@
       }
     }
 
-    // Push a number to the stats array
+    // Stats functions
     function statPush() {
       const v = parseFloat(document.getElementById('display').value);
       if (!isNaN(v)) stats.push(v);
     }
-
-    // Insert the last pushed stat
     function statInsert() {
       if (stats.length) appendToDisplay(stats[stats.length - 1].toString());
     }
 
-    // Insert a random number
+    // Insert random number
     function insertRandom() {
       appendToDisplay(Math.random().toString());
     }
   </script>
 </body>
-</html>
+      </html>
